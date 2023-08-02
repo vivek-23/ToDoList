@@ -130,7 +130,9 @@ class TaskController extends Controller{
             ]);
         }
 
-        if($request->get('task_range') == 'today'){
+        if(empty($request->get('task_range'))){
+           $tasks = Task::select('*'); 
+        }else if($request->get('task_range') == 'today'){
             $tasks = Task::where('due_date', date("Y-m-d"));
         }else if($request->get('task_range') == 'this week'){
             $tasks = Task::whereBetween('due_date', [
@@ -152,8 +154,7 @@ class TaskController extends Controller{
             $tasks->where('task_status', Task::getCompletedStatus());
         }
 
-        $tasks = $tasks->orderBy('due_date')
-                        ->get();
+        $tasks = $tasks->orderBy('due_date')->get();       
         $result = [];
 
         foreach($tasks as $task){
